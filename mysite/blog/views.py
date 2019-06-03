@@ -2,11 +2,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
-from .models import Post, Comment
+from .models import Post, Comment,User
 from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
 from taggit.models import Tag
 from django.db.models import Count
+
 
 def post_list(request, tag_slug=None):
 
@@ -101,3 +102,25 @@ def post_share(request, post_id):
 
 
 
+def post_list_draft(request):
+    posts = Post.objects.all().filter(publish__year='2019', status='draft')
+
+    return render(request, 'blog/post/filtro.html', {'posts': posts})
+
+
+def comentario_detalhe(request):
+    comentarios = Comment.objects.all().filter(active=True).order_by('name')
+
+    return render(request, 'blog/post/comentarios.html', {'body': comentarios})
+
+
+def slug_post(request, post):
+    post = get_object_or_404(Post, slug=post, status='published')
+
+    return render(request, 'blog/post/slugs.html', {'post': post})
+
+
+def view_detalhe(request):
+    posts = Post.published.all()
+    author = User.objects.all()
+    return render(request, 'blog/post/view_detalhe.html', {'posts': posts}, {'author': author})
