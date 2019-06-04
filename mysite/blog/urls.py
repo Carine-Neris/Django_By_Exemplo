@@ -19,4 +19,6 @@ urlpatterns = [
     path('comentarios/', views.comentario_detalhe, name='comentario_detalhe'),
     path('<slug:post>/', views.slug_post, name='slug_post'),
     path('detalhe', views.view_detalhe, name='view_detalhe'),
+
+    path('post/tags/<slug:tag_slug>/', views.retorna_post, name='retorna_post'),
 ]

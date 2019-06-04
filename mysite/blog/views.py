@@ -101,7 +101,6 @@ def post_share(request, post_id):
     return render(request, 'blog/post/share.html', {'post': post, 'form': form, 'sent': sent})
 
 
-
 def post_list_draft(request):
     posts = Post.objects.all().filter(publish__year='2019', status='draft')
 
@@ -121,6 +120,43 @@ def slug_post(request, post):
 
 
 def view_detalhe(request):
-    posts = Post.published.all()
-    author = User.objects.all()
-    return render(request, 'blog/post/view_detalhe.html', {'posts': posts}, {'author': author})
+    posts = Post.objects.all().filter(status='published')
+
+    return render(request, 'blog/post/view_detalhe.html', {'posts': posts})
+
+
+def retorna_post(request, tag_slug=None):
+    posts = Post.objects.all().filter(status='published')
+    tag = None
+
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        posts = posts.filter(tags__in=[tag])
+
+    paginator = Paginator(posts, 5)
+    page = request.GET.get('page')
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
+    posts_tags_id = posts.tags.values_list('id', flat=True)
+    similar_post = Post.published.filter(tags__in=posts_tags_id).exclude(id=posts.id)
+    similar_post = similar_post.annotate(same_tags=Count('tags')).order_by('-same_tags', '-publish')[:4]
+
+    return render(request, 'blog/post/retorna_post.html', {'posts': posts, 'page': page,
+                                                           'similar_post': similar_post,
+                                                            'tag':tag})
+
+
+
+
+
+
+
+
+
+

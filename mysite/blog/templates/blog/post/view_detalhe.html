@@ -1,14 +1,20 @@
 {% for post in posts %}
 
-<b>{{post.title}}</b>
+<a href="{{post.get_absolute_url}}">
+    {{post.title}}
+</a>
+
 <br>
 <i>{{post.body}}</i>
 <br><br>
-    {{post.author}}
-<br>
-    {{author.email}}
+    {% if post.author.email %}
+        {{post.author.email}}
+    {% else %}
+        e_mail não cadastrado
+    {% endif %}
 <br>
     {{post.publish}}
 <br><br>
 
 {% endfor %}
+

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>posts</title>
+</head>
+<body>
+    {% if tag %}
+        <h2>{{tag.name}}</h2>
+
+    {% endif %}
+
+    {% for post in posts %}
+    <div>
+        <a href="{{post.get_absolute_url}}">
+        <h1>{{post.title}}</h1>
+        </a>
+    </div>
+    {% endfor %}
+
+{% include "pagination.html" with page=posts %}
+</body>
+</html>
